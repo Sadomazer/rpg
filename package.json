@@ -6,6 +6,7 @@
     "build:dev": "cross-env NODE_ENV=development webpack",
     "build": "cross-env NODE_ENV=production webpack",
     "lint": "npx eslint src/**/*.js",
+    "start": "webpack server",
     "prettier": "npx prettier --write .",
     "dev": "npx webpack server",
     "prepare": "husky install"
