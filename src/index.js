@@ -15,41 +15,62 @@ const charSide = {
 };
 let view = charSide.down;
 let cycle = 0;
-let pY = canvas.height / 2 - spriteH;
-let pX = canvas.width / 2 - spriteW;
-let downPressed = false;
-let upPressed = false;
-let rightPressed = false;
-let leftPressed = false;
+const charCoordinate = {
+  pY: canvas.height / 2 - spriteH,
+  pX: canvas.width / 2 - spriteW,
+};
+const keyPressed = {
+  downPressed: false,
+  upPressed: false,
+  rightPressed: false,
+  leftPressed: false,
+};
+let buttonPressed = false;
+
+let keyFirst = 0;
+let keySecond = 0;
 
 function keyDownHandler(e) {
   if (e.key === 'Down' || e.key === 'ArrowDown') {
-    downPressed = true;
+    keyPressed.downPressed = true;
   }
   if (e.key === 'Up' || e.key === 'ArrowUp') {
-    upPressed = true;
+    keyPressed.upPressed = true;
   }
   if (e.key === 'Right' || e.key === 'ArrowRight') {
-    rightPressed = true;
+    keyPressed.rightPressed = true;
   }
   if (e.key === 'Left' || e.key === 'ArrowLeft') {
-    leftPressed = true;
+    keyPressed.leftPressed = true;
+  }
+
+  buttonPressed = true;
+
+  if (e.key === 'Right' || e.key === 'ArrowRight') keyFirst = 1;
+  else if (e.key === 'Left' || e.key === 'ArrowLeft') keySecond = 1;
+  if (keyFirst && keySecond) {
+    buttonPressed = false;
   }
 }
 
 function keyUpHandler(e) {
   if (e.key === 'Down' || e.key === 'ArrowDown') {
-    downPressed = false;
+    keyPressed.downPressed = false;
   }
   if (e.key === 'Up' || e.key === 'ArrowUp') {
-    upPressed = false;
+    keyPressed.upPressed = false;
   }
   if (e.key === 'Right' || e.key === 'ArrowRight') {
-    rightPressed = false;
+    keyPressed.rightPressed = false;
   }
   if (e.key === 'Left' || e.key === 'ArrowLeft') {
-    leftPressed = false;
+    keyPressed.leftPressed = false;
   }
+
+  keyFirst = 0;
+  keySecond = 0;
+
+  buttonPressed = false;
 }
 
 document.addEventListener('keydown', keyDownHandler);
@@ -59,43 +80,46 @@ const img = document.createElement('img');
 img.src = SenseiWalk;
 
 function moveLimiter() {
-  if (pY + spriteH > canvas.height) {
-    pY = canvas.height - spriteH;
+  if (charCoordinate.pY + spriteH > canvas.height) {
+    charCoordinate.pY = canvas.height - spriteH;
   }
-  if (pX + spriteW > canvas.width) {
-    pX = canvas.width - spriteW;
+  if (charCoordinate.pX + spriteW > canvas.width) {
+    charCoordinate.pX = canvas.width - spriteW;
   }
-  if (pY < 0) {
-    pY = 0;
+  if (charCoordinate.pY < 0) {
+    charCoordinate.pY = 0;
   }
-  if (pX < 0) {
-    pX = 0;
+  if (charCoordinate.pX < 0) {
+    charCoordinate.pX = 0;
   }
 }
 
 img.addEventListener('load', () => {
   setInterval(() => {
-    if (downPressed) {
-      pY += step;
+    if (keyPressed.downPressed) {
+      charCoordinate.pY += step;
       view = charSide.down;
     }
-    if (upPressed) {
-      pY -= step;
+    if (keyPressed.upPressed) {
+      charCoordinate.pY -= step;
       view = charSide.up;
     }
-    if (rightPressed) {
-      pX += step;
+    if (keyPressed.rightPressed) {
+      charCoordinate.pX += step;
       view = charSide.right;
     }
-    if (leftPressed) {
-      pX -= step;
+    if (keyPressed.leftPressed) {
+      charCoordinate.pX -= step;
       view = charSide.left;
     }
 
-    cycle = (cycle + 1) % shots;
+    if (buttonPressed) {
+      cycle = (cycle + 1) % shots;
+    }
+
     moveLimiter();
 
     ctx.clearRect(0, 0, 600, 600);
-    ctx.drawImage(img, cycle * spriteW, view, spriteW, spriteH, pX, pY, spriteH, spriteW);
+    ctx.drawImage(img, cycle * spriteW, view, spriteW, spriteH, charCoordinate.pX, charCoordinate.pY, spriteH, spriteW);
   }, 80);
 });
