@@ -1,5 +1,9 @@
 import './index.scss';
 import SenseiWalk from './assets/Female-2-Walk.png';
+import terrainAtlas from './assets/terrain.png';
+import worldCfg from './config/world.json';
+import sprites from './config/sprites';
+import ClientGame from './client/ClientGame';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -29,6 +33,20 @@ let buttonPressed = false;
 
 let keyFirst = 0;
 let keySecond = 0;
+
+//terrain
+const terrain = document.createElement('img');
+terrain.src = terrainAtlas;
+
+/*terrain.addEventListener('load', () => {
+  const {map} = worldCfg;
+  map.forEach((cfgRow, y) => {
+    cfgRow.forEach((cfgCell, x) => {
+      const [sX, sY, sW, sH] = sprites.terrain[cfgCell[0]].frames[0];
+      ctx.drawImage(terrain, sX, sY, sW, sH, x * spriteW, y * spriteH, spriteW, spriteH);
+    });
+  });
+});*/
 
 function keyDownHandler(e) {
   if (e.key === 'Down' || e.key === 'ArrowDown') {
@@ -94,32 +112,40 @@ function moveLimiter() {
   }
 }
 
+function walk(timestamp) {
+  if (keyPressed.downPressed) {
+    charCoordinate.pY += step;
+    view = charSide.down;
+  }
+  if (keyPressed.upPressed) {
+    charCoordinate.pY -= step;
+    view = charSide.up;
+  }
+  if (keyPressed.rightPressed) {
+    charCoordinate.pX += step;
+    view = charSide.right;
+  }
+  if (keyPressed.leftPressed) {
+    charCoordinate.pX -= step;
+    view = charSide.left;
+  }
+
+  if (buttonPressed) {
+    cycle = (cycle + 1) % shots;
+  }
+
+  moveLimiter();
+
+  ctx.clearRect(0, 0, 600, 600);
+  ctx.drawImage(img, cycle * spriteW, view, spriteW, spriteH, charCoordinate.pX, charCoordinate.pY, spriteH, spriteW);
+
+  window.requestAnimationFrame(walk);
+}
+
 img.addEventListener('load', () => {
-  setInterval(() => {
-    if (keyPressed.downPressed) {
-      charCoordinate.pY += step;
-      view = charSide.down;
-    }
-    if (keyPressed.upPressed) {
-      charCoordinate.pY -= step;
-      view = charSide.up;
-    }
-    if (keyPressed.rightPressed) {
-      charCoordinate.pX += step;
-      view = charSide.right;
-    }
-    if (keyPressed.leftPressed) {
-      charCoordinate.pX -= step;
-      view = charSide.left;
-    }
+  window.requestAnimationFrame(walk);
+});
 
-    if (buttonPressed) {
-      cycle = (cycle + 1) % shots;
-    }
-
-    moveLimiter();
-
-    ctx.clearRect(0, 0, 600, 600);
-    ctx.drawImage(img, cycle * spriteW, view, spriteW, spriteH, charCoordinate.pX, charCoordinate.pY, spriteH, spriteW);
-  }, 80);
+window.addEventListener('load', () => {
+  ClientGame.init({ tagId: 'game' });
 });
