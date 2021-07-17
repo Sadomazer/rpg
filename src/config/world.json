@@ -42,7 +42,9 @@
       [["grass"]],
       [["grass"]],
       [["grass"]],
-      [["grass"]],
+      [["grass", { "type": "girl2",
+        "player": true
+      }]],
       [["grass"]],
       [["grass"]],
       [["grass"]],
