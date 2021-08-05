@@ -75,7 +75,7 @@ class ClientGame {
         });
 
         if(canMove) {
-          this.player.setState(direction);
+          this.player.setState(control);
           this.player.once('motion-stopped', () => player.setState('main'));
         }
       }
